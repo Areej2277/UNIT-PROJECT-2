@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IdeaHub</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+</head>
+<body class="light-mode">
+    <header>
+        <h1>IdeaHub</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'ideas:list' %}">Explore Ideas</a></li>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'about' %}">About</a></li>
+                <li><a href="{% url 'ideas:list' %}">Ideas</a></li>
+                <li><a href="{% url 'ideas:create' %}"> Add Idea</a></li>
+                <li><a href="{% url 'contact' %}"> Contact</a></li>
+            </ul>
+            
+            <div class="auth-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'register' %}">Sign Up</a> /
+                    <a href="{% url 'login' %}">Sign In</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 IdeaHub - All rights reserved</p>
+    </footer>
+
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+</html>

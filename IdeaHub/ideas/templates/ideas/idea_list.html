@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% block content %}
+    <h2>Latest Ideas</h2>
+    
+    <form method="GET">
+        <label for="category">Filter by Category:</label>
+        <select name="category" id="category" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="tech">Technology</option>
+            <option value="business">Business</option>
+            <option value="science">Science</option>
+            <option value="design">Design</option>
+            <option value="other">Other</option>
+        </select>
+    </form>
+
+    {% for idea in ideas %}
+    <div class="idea">
+        <h3>{{ idea.title }}</h3>
+        <p>{{ idea.description }}</p>
+        <p><strong>Category:</strong> {{ idea.get_category_display }}</p>
+        <p><em>By {{ idea.user.username }} on {{ idea.created_at }}</em></p>
+        
+        {% if idea.user == request.user %}
+            <a href="{% url 'ideas:edit' idea.id %}"> Edit</a> |
+            <a href="{% url 'ideas:delete' idea.id %}"> Delete</a>
+        {% endif %}
+    </div>
+{% endfor %}
+{% endblock %}
