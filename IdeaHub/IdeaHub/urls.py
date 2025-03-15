@@ -22,4 +22,7 @@ urlpatterns = [
     path('', include('core.urls')),
     path('users/', include('users.urls')),
      path('ideas/', include('ideas.urls')),
+     path('comments/', include('comments.urls')),
+     path('likes/', include('likes.urls')),
+
 ]

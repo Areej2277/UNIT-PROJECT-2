@@ -2,6 +2,7 @@
 {% block content %}
     <h2>Latest Ideas</h2>
     
+    <!-- فلترة الأفكار حسب التصنيف -->
     <form method="GET">
         <label for="category">Filter by Category:</label>
         <select name="category" id="category" onchange="this.form.submit()">
@@ -25,6 +26,37 @@
             <a href="{% url 'ideas:edit' idea.id %}"> Edit</a> |
             <a href="{% url 'ideas:delete' idea.id %}"> Delete</a>
         {% endif %}
+
+        <!-- زر الإعجاب -->
+        <form method="POST" action="{% url 'likes:like' idea.id %}">
+            {% csrf_token %}
+            <button type="submit">
+                {% if request.user in idea.likes.all.values_list('user', flat=True') %}
+                     Unlike ({{ idea.likes.count }})
+                {% else %}
+                     Like ({{ idea.likes.count }})
+                {% endif %}
+            </button>
+        </form>
+
+
+        <!-- عرض التعليقات -->
+        <h4>Comments:</h4>
+        <ul>
+            {% for comment in idea.comments.all %}
+                <li><strong>{{ comment.user.username }}:</strong> {{ comment.content }} ({{ comment.created_at|date:"F d, Y H:i" }})</li>
+            {% empty %}
+                <li>No comments yet.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- رابط إضافة تعليق -->
+        {% if user.is_authenticated %}
+            <a href="{% url 'comments:add' idea.id %}"> Add Comment</a>
+        {% else %}
+            <p><a href="{% url 'login' %}">Sign in</a> to comment.</p>
+        {% endif %}
     </div>
-{% endfor %}
+    <hr>
+    {% endfor %}
 {% endblock %}
