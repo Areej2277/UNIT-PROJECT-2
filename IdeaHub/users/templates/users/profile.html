@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Profile</h2>
+
+    {% if user.profile_picture %}
+        <img src="data:image/jpeg;base64,{{ user.profile_picture|safe }}" alt="Profile Picture" class="img-thumbnail" width="150">
+    {% else %}
+        <img src="/static/images/default.jpg" alt="Default Profile" class="img-thumbnail" width="150">
+    {% endif %}
+
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+
+    <a href="{% url 'users:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+
+    <h3 class="mt-4">Your Ideas</h3>
+    <ul class="list-group">
+        {% for idea in user_ideas %}
+            <li class="list-group-item">
+                <a href="{% url 'ideas:detail' idea.id %}">{{ idea.title }}</a>
+            </li>
+        {% empty %}
+            <li class="list-group-item">You have not added any ideas yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

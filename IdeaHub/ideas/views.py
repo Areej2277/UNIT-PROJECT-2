@@ -2,18 +2,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Idea
 from .forms import IdeaForm
+from likes.models import Like
 
 # Create your views here.
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import Idea
-from .forms import IdeaForm
-
 
 def idea_list(request):
-    ideas = Idea.objects.all().order_by('-created_at')  
-    return render(request, 'ideas/idea_list.html', {'ideas': ideas})
+    category = request.GET.get('category', None)
+
+    if category:
+        ideas = Idea.objects.filter(category=category).order_by('-created_at')
+    else:
+        ideas = Idea.objects.all().order_by('-created_at')
+    liked_ideas = {idea.id: idea.likes.filter(user=request.user).exists() for idea in ideas} if request.user.is_authenticated else {}
+    return render(request, 'ideas/idea_list.html', {'ideas': ideas, 'liked_ideas': liked_ideas})
+
 
 
 @login_required
@@ -28,6 +31,7 @@ def idea_create(request):
     else:
         form = IdeaForm()
     return render(request, 'ideas/idea_create.html', {'form': form})
+
 
 
 @login_required
@@ -50,3 +54,7 @@ def idea_delete(request, idea_id):
         idea.delete()
         return redirect('ideas:list')
     return render(request, 'ideas/idea_delete.html', {'idea': idea})
+
+def idea_detail(request, idea_id):
+    idea = get_object_or_404(Idea, id=idea_id)
+    return render(request, 'ideas/detail.html', {'idea': idea})
