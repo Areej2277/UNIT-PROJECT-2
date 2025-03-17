@@ -2,7 +2,13 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
-    profile_picture = models.ImageField(upload_to='', default='default.jpg', blank=True, null=True)
+    USER_TYPE_CHOICES = [
+        ('individual', 'Individual'),
+        ('business', 'Business'),
+    ]
+    
+    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default='individual')
+    profile_picture = models.ImageField(upload_to="images/avatars/", default="images/avatars/default.jpg", blank=True, null=True)
 
     groups = models.ManyToManyField(
         'auth.Group',
@@ -19,3 +25,6 @@ class CustomUser(AbstractUser):
         help_text='Specific permissions for this user.',
         verbose_name='user permissions',
     )
+
+    def _str_(self):
+        return self.username

@@ -3,6 +3,7 @@
 <div class="container mt-5">
     <h2 class="mb-4 text-center">Latest Ideas</h2>
     
+    
     <form method="GET" class="d-flex justify-content-center mb-4">
         <select name="category" id="category" class="form-select w-50" onchange="this.form.submit()">
             <option value="">All Categories</option>
@@ -19,46 +20,50 @@
         <div class="col-md-6">
             <div class="card mb-4 shadow-sm">
                 <div class="card-body">
-                    <h4 class="card-title">{{ idea.title }}</h4>
-                    <p class="card-text">{{ idea.description }}</p>
+                    <h4 class="card-title">
+                        <a href="{% url 'ideas:detail' idea.id %}">{{ idea.title }}</a>
+                    </h4>
+                    <p class="card-text">{{ idea.description|truncatewords:20 }}</p>
                     <p class="text-muted"><strong>Category:</strong> {{ idea.get_category_display }}</p>
-                    <p class="text-muted"><em>By {{ idea.user.username }} on {{ idea.created_at }}</em></p>
+                    <p class="text-muted"><em>By {{ idea.user.username }} on {{ idea.created_at|date:"F d, Y H:i" }}</em></p>
 
                     {% if idea.user == request.user %}
                         <a href="{% url 'ideas:edit' idea.id %}" class="btn btn-warning btn-sm">Edit</a>
                         <a href="{% url 'ideas:delete' idea.id %}" class="btn btn-danger btn-sm">Delete</a>
                     {% endif %}
 
-
+                    <!-- زر الإعجاب -->
                     <form method="POST" action="{% url 'likes:like' idea.id %}" class="d-inline">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-primary btn-sm">
-                            {% if idea.id in liked_ideas and liked_ideas|dictsort:idea.id %}
-                                ❤ Unlike ({{ idea.likes.count }})
+                            {% if request.user in idea.likes.all %}
+                                Unlike ({{ idea.likes.count }})
                             {% else %}
-                                🤍 Like ({{ idea.likes.count }})
+                                Like ({{ idea.likes.count }})
                             {% endif %}
                         </button>
                     </form>
 
-                    <!-- زر الشراكة -->
-                    <form method="POST" action="{% url 'partnerships:request' idea.id %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-success btn-sm">
-                            {% if request.user in idea.partnerships.all.values_list.user %}
-                                Cancel Request
-                            {% else %}
-                                Join Partnership
-                            {% endif %}
-                        </button>
-                    </form>
+                    <!-- زر طلب الشراكة -->
+                    {% if request.user.is_authenticated %}
+                        <form method="POST" action="{% url 'partnerships:request' idea.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-success btn-sm">
+                                {% if request.user in idea.partnerships.all.values_list.user %}
+                                    Cancel Request
+                                {% else %}
+                                    Request Partnership
+                                {% endif %}
+                            </button>
+                        </form>
+                    {% endif %}
 
                     <hr>
 
-                    <!-- عرض التعليقات -->
-                    <h5>Comments:</h5>
+
+                    <h5>Recent Comments:</h5>
                     <ul class="list-group">
-                        {% for comment in idea.comments.all %}
+                        {% for comment in idea.comments.all|slice:":2" %}
                             <li class="list-group-item">
                                 <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
                                 <span class="text-muted float-end">{{ comment.created_at|date:"F d, Y H:i" }}</span>
@@ -68,7 +73,10 @@
                         {% endfor %}
                     </ul>
 
-                    <!-- رابط إضافة تعليق -->
+                    
+                    <a href="{% url 'ideas:detail' idea.id %}" class="btn btn-secondary btn-sm mt-2">View More</a>
+
+
                     {% if user.is_authenticated %}
                         <a href="{% url 'comments:add' idea.id %}" class="btn btn-primary btn-sm mt-2">Add Comment</a>
                     {% else %}

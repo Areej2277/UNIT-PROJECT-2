@@ -1,57 +1,91 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.http import HttpRequest
+from django.contrib.auth import authenticate, login, logout
+from django.db import IntegrityError, transaction
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import CustomUser
 from .forms import CustomUserCreationForm, EditProfileForm
 
 
-# Create your views here.
+# Register new user
+from django.shortcuts import render, redirect
+from django.http import HttpRequest
+from django.contrib.auth import authenticate, login, logout
+from django.db import IntegrityError, transaction
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import CustomUser
+from .forms import CustomUserCreationForm, EditProfileForm
 
-#  Register a new user
-def register(request):
-    if request.method == 'POST':
+# Register new user
+def register(request: HttpRequest):
+    if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')
+            try:
+                with transaction.atomic():
+                    user = form.save(commit=False)
+                    user.user_type = form.cleaned_data['user_type']
+                    user.save()
+                    user = authenticate(request, username=user.username, password=form.cleaned_data['password1'])
+                    if user:
+                        login(request, user)
+                        messages.success(request, "Account created successfully!", "alert-success")
+                        return redirect("home")
+
+            except IntegrityError:
+                messages.error(request, "Username already taken, please try another.", "alert-danger")
+            except Exception as e:
+                messages.error(request, "Error creating account, please try again.", "alert-danger")
+                print(e)
     else:
         form = CustomUserCreationForm()
-    return render(request, 'users/register.html', {'form': form})
 
-#  login
-def user_login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
+    return render(request, "users/register.html", {"form": form})
+
+
+# User login
+def user_login(request: HttpRequest):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+
+        if user:
             login(request, user)
-            return redirect('home')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'users/login.html', {'form': form})
+            messages.success(request, "Logged in successfully", "alert-success")
+            return redirect(request.GET.get("next", "home"))
+        else:
+            messages.error(request, "Invalid username or password", "alert-danger")
 
-# logout
-def user_logout(request):
+    return render(request, "users/login.html")
+
+
+# Logout user
+def user_logout(request: HttpRequest):
     logout(request)
-    return redirect('home')
+    messages.success(request, "Logged out successfully", "alert-warning")
+    return redirect("home")
+
 
 # View profile
-@login_required
+@login_required(login_url='/users/login/')  
 def profile(request):
-    user_ideas = request.user.idea_set.all()  
-    return render(request, 'users/profile.html', {'user_ideas': user_ideas})
+    return render(request, 'users/profile.html', {'user': request.user})
+
 
 # Edit profile
-@login_required
+@login_required(login_url='/users/login/')
 def edit_profile(request):
     if request.method == 'POST':
         user_form = EditProfileForm(request.POST, request.FILES, instance=request.user)
 
         if user_form.is_valid():
+            if 'profile_picture' in request.FILES:
+                request.user.profile_picture = request.FILES['profile_picture']
             user_form.save()
-            messages.success(request, "Profile updated successfully!")
+            messages.success(request, "Profile updated successfully!", "alert-success")
             return redirect('users:profile')
 
     else:

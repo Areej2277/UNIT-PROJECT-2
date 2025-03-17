@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ idea.title }}</h2>
+    <p><strong>Category:</strong> {{ idea.get_category_display }}</p>
+    <p>{{ idea.description }}</p>
+    <p><em>By {{ idea.user.username }} on {{ idea.created_at|date:"F d, Y H:i" }}</em></p>
+
+    <!-- زر الإعجاب -->
+    <form method="POST" action="{% url 'likes:like' idea.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-primary">
+            {% if request.user in idea.likes.all %}
+                Unlike ({{ idea.likes.count }})
+            {% else %}
+                Like ({{ idea.likes.count }})
+            {% endif %}
+        </button>
+    </form>
+
+    <!-- زر الشراكة -->
+    {% if request.user.is_authenticated %}
+        <form method="POST" action="{% url 'partnerships:request' idea.id %}" class="mt-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-success">
+                {% if request.user in idea.partnerships.all.values_list.user %}
+                    Cancel Request
+                {% else %}
+                    Request Partnership
+                {% endif %}
+            </button>
+        </form>
+    {% endif %}
+
+    <hr>
+
+    <!-- عرض التعليقات -->
+    <h3 class="mt-4">Comments:</h3>
+    <ul class="list-group">
+        {% for comment in idea.comments.all %}
+            <li class="list-group-item">
+                <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+                <span class="text-muted float-end">{{ comment.created_at|date:"F d, Y H:i" }}</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No comments yet.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- رابط إضافة تعليق -->
+    {% if user.is_authenticated %}
+        <a href="{% url 'comments:add' idea.id %}" class="btn btn-primary mt-3">Add Comment</a>
+    {% else %}
+        <p><a href="{% url 'users:login' %}">Sign in</a> to comment.</p>
+    {% endif %}
+</div>
+{% endblock %}

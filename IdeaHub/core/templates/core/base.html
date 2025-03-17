@@ -32,6 +32,14 @@
 
                 <ul class="navbar-nav ms-3">
                     {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'notifications_list' %}">
+                                Notifications
+                                {% if unread_notifiactions > 0 %}
+                                    <span class="badge bg-danger">{{ unread_notifiactions}}</span>
+                                {% endif %}
+                            </a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'users:profile' %}">Profile</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'users:logout' %}">Logout</a></li>
                     {% else %}
