@@ -1,5 +1,31 @@
 {% extends 'core/base.html' %}
 {% block content %}
-    <h2>Contact Us</h2>
-    <p>Email: support@ideahub.com</p>
+<div class="container mt-5">
+    <h2 class="text-center fade-in">Contact Us</h2>
+    <p class="text-center fade-in delay">We'd love to hear from you! Fill out the form below.</p>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <form class="contact-form fade-in delay-2">
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-user"></i> Your Name</label>
+                    <input type="text" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-edit"></i> Message</label>
+                    <textarea class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-paper-plane"></i> Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <p>Or email us directly at <strong>support@ideahub.com</strong></p>
+    </div>
+</div>
 {% endblock %}

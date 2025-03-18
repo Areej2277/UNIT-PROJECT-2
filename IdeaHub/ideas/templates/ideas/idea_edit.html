@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-3">Edit Idea: {{ idea.title }}</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Changes</button>
+            <a href="{% url 'ideas:detail' idea.id %}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

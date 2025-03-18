@@ -1,10 +1,17 @@
 {% extends 'core/base.html' %}
 {% block content %}
-    <h2>Add a Comment on "{{ idea.title }}"</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit Comment</button>
-    </form>
-    <a href="{% url 'ideas:list' %}">Back to Ideas</a>
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4">Add a Comment on "{{ idea.title }}"</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-success"><i class="fas fa-comment-dots"></i> Submit Comment</button>
+            <a href="{% url 'ideas:list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Ideas</a>
+        </form>
+    </div>
+</div>
 {% endblock %}

@@ -1,5 +1,27 @@
 {% extends 'core/base.html' %}
 {% block content %}
-    <h2>About IdeaHub</h2>
-    <p>This platform allows users to share and explore innovative ideas.</p>
+<section class="about">
+    <div class="container">
+        <h2 class="text-center fade-in">About IdeaHub</h2>
+        <p class="text-center fade-in delay">A platform where creativity meets opportunity!</p>
+
+        <div class="row mt-4">
+            <div class="col-md-4 text-center fade-in">
+                <i class="fas fa-lightbulb fa-3x text-primary"></i>
+                <h4>Innovate</h4>
+                <p>Share your ideas and make them a reality.</p>
+            </div>
+            <div class="col-md-4 text-center fade-in delay">
+                <i class="fas fa-comments fa-3x text-primary"></i>
+                <h4>Engage</h4>
+                <p>Get feedback and collaborate with like-minded individuals.</p>
+            </div>
+            <div class="col-md-4 text-center fade-in delay-2">
+                <i class="fas fa-users fa-3x text-primary"></i>
+                <h4>Grow</h4>
+                <p>Turn your ideas into successful projects.</p>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

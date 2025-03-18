@@ -1,30 +1,18 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
-class CustomUser(AbstractUser):
-    USER_TYPE_CHOICES = [
-        ('individual', 'Individual'),
-        ('business', 'Business'),
+class Profile(models.Model):
+    USER_TYPES = [
+        ('idea_owner', 'Idea Owner'),
+        ('business', 'Business / Investor')
     ]
-    
-    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default='individual')
-    profile_picture = models.ImageField(upload_to="images/avatars/", default="images/avatars/default.jpg", blank=True, null=True)
 
-    groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='customuser_groups',
-        blank=True,
-        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
-        verbose_name='groups',
-    )
-    
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='customuser_permissions',
-        blank=True,
-        help_text='Specific permissions for this user.',
-        verbose_name='user permissions',
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user_type = models.CharField(max_length=20, choices=USER_TYPES, default='idea_owner')
+    about = models.TextField(blank=True, null=True)
+    avatar = models.ImageField(upload_to="images/avatars/", default="images/avatars/avatar.webp")
+    website = models.URLField(blank=True, null=True)
+    favorite_ideas = models.ManyToManyField('ideas.Idea', related_name="favorited_by", blank=True)
 
-    def _str_(self):
-        return self.username
+    def _str_(self) -> str:
+        return f"{self.user.username} - {self.get_user_type_display()}"

@@ -2,9 +2,11 @@
 {% load static %}
 
 {% block content %}
-    <section class="hero">
-        <h1>Welcome to IdeaHub</h1>
-        <p>Share and explore innovative ideas!</p>
-        <button class="explore-btn">Explore Ideas</button>
-    </section>
+<section class="hero">
+    <div class="hero-text">
+        <h1 class="fade-in">Welcome to IdeaHub</h1>
+        <p class="fade-in delay">Share and explore innovative ideas!</p>
+        <a href="{% url 'ideas:list' %}" class="explore-btn fade-in delay-2">Explore Ideas</a>
+    </div>
+</section>
 {% endblock %}

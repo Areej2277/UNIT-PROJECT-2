@@ -1,51 +1,61 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError, transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser
-from .forms import CustomUserCreationForm, EditProfileForm
+from .models import Profile
 
-
-# Register new user
-from django.shortcuts import render, redirect
-from django.http import HttpRequest
-from django.contrib.auth import authenticate, login, logout
-from django.db import IntegrityError, transaction
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from .models import CustomUser
-from .forms import CustomUserCreationForm, EditProfileForm
-
-# Register new user
+# تسجيل مستخدم جديد
 def register(request: HttpRequest):
     if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            try:
-                with transaction.atomic():
-                    user = form.save(commit=False)
-                    user.user_type = form.cleaned_data['user_type']
-                    user.save()
-                    user = authenticate(request, username=user.username, password=form.cleaned_data['password1'])
-                    if user:
-                        login(request, user)
-                        messages.success(request, "Account created successfully!", "alert-success")
-                        return redirect("home")
+        try:
+            with transaction.atomic():
+                username = request.POST["username"]
+                password = request.POST["password"]
+                confirm_password = request.POST["password2"]
+                email = request.POST["email"]
+                first_name = request.POST["first_name"]
+                last_name = request.POST["last_name"]
+                user_type = request.POST["user_type"]  # استخراج نوع الحساب
 
-            except IntegrityError:
-                messages.error(request, "Username already taken, please try another.", "alert-danger")
-            except Exception as e:
-                messages.error(request, "Error creating account, please try again.", "alert-danger")
-                print(e)
-    else:
-        form = CustomUserCreationForm()
+                # التحقق من تطابق كلمتي المرور
+                if password != confirm_password:
+                    messages.error(request, "Passwords do not match.", "alert-danger")
+                    return render(request, "users/register.html")
 
-    return render(request, "users/register.html", {"form": form})
+                # إنشاء المستخدم
+                new_user = User.objects.create_user(
+                    username=username, 
+                    password=password, 
+                    email=email, 
+                    first_name=first_name, 
+                    last_name=last_name
+                )
+                new_user.save()
+
+                # إنشاء بروفايل للمستخدم بناءً على نوع الحساب
+                profile = Profile.objects.create(
+                    user=new_user,
+                    user_type=user_type,
+                    about=request.POST.get("about", ""),
+                    avatar=request.FILES.get("avatar", "images/avatars/avatar.webp")
+                )
+
+            messages.success(request, "Account created successfully!", "alert-success")
+            return redirect("users:login")
+
+        except IntegrityError:
+            messages.error(request, "Username already taken, please try another.", "alert-danger")
+        except Exception as e:
+            messages.error(request, "Error creating account, please try again.", "alert-danger")
+            print(f"Error in register view: {e}")
+
+    return render(request, "users/register.html")
 
 
-# User login
+# تسجيل دخول المستخدم
 def user_login(request: HttpRequest):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -62,33 +72,47 @@ def user_login(request: HttpRequest):
     return render(request, "users/login.html")
 
 
-# Logout user
+# تسجيل خروج المستخدم
 def user_logout(request: HttpRequest):
     logout(request)
     messages.success(request, "Logged out successfully", "alert-warning")
     return redirect("home")
 
 
-# View profile
-@login_required(login_url='/users/login/')  
-def profile(request):
-    return render(request, 'users/profile.html', {'user': request.user})
-
-
-# Edit profile
+# عرض الملف الشخصي
 @login_required(login_url='/users/login/')
-def edit_profile(request):
-    if request.method == 'POST':
-        user_form = EditProfileForm(request.POST, request.FILES, instance=request.user)
+def profile(request: HttpRequest):
+    return render(request, "users/profile.html", {"user": request.user})
 
-        if user_form.is_valid():
-            if 'profile_picture' in request.FILES:
-                request.user.profile_picture = request.FILES['profile_picture']
-            user_form.save()
+
+# تعديل الملف الشخصي بدون forms.py
+@login_required(login_url='/users/login/')
+def edit_profile(request: HttpRequest):
+    if request.method == "POST":
+        try:
+            with transaction.atomic():
+                user = request.user
+
+                # تحديث بيانات المستخدم
+                user.first_name = request.POST["first_name"]
+                user.last_name = request.POST["last_name"]
+                user.email = request.POST["email"]
+                user.save()
+
+                # تحديث بيانات الملف الشخصي
+                profile = user.profile
+                profile.about = request.POST.get("about", "")
+
+                if "avatar" in request.FILES:
+                    profile.avatar = request.FILES["avatar"]
+
+                profile.save()
+
             messages.success(request, "Profile updated successfully!", "alert-success")
-            return redirect('users:profile')
+            return redirect("users:profile")
 
-    else:
-        user_form = EditProfileForm(instance=request.user)
+        except Exception as e:
+            messages.error(request, "Couldn't update profile, please try again.", "alert-danger")
+            print(f"Error in edit_profile view: {e}")
 
-    return render(request, 'users/edit_profile.html', {'user_form': user_form})
+    return render(request, "users/edit_profile.html", {"user": request.user})
