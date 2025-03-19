@@ -2,6 +2,14 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Notifications</h2>
+
+    {% if notifications %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="text-muted">You have {{ notifications.count }} notifications.</p>
+            <a href="{% url 'core:mark_all_notifications_as_read' %}" class="btn btn-danger btn-sm">Mark All as Read</a>
+        </div>
+    {% endif %}
+
     <ul class="list-group">
         {% for notification in notifications %}
             <li class="list-group-item {% if not notification.is_read %}bg-light{% endif %}">

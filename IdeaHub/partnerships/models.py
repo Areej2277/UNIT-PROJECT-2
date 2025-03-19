@@ -2,23 +2,31 @@ from django.db import models
 from django.contrib.auth.models import User
 from ideas.models import Idea
 
-class Partnership(models.Model):
-    idea = models.ForeignKey(Idea, on_delete=models.CASCADE, related_name='partnerships')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    is_approved = models.BooleanField(default=False)  # يجب أن يوافق مالك الفكرة على الشراكة
+# User classification (idea owner - company)
+class CompanyProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="company_profile")
+    company_name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
+
+    def _str_(self):
+        return self.company_name
+
+#Subscription request form
+class PartnershipRequest(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+
+    idea = models.ForeignKey(Idea, on_delete=models.CASCADE, related_name="partnership_requests")
+    company_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="partnership_requests")
+    idea_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_partnership_requests")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('idea', 'user')  # كل مستخدم يمكنه طلب الشراكة مرة واحدة فقط لكل فكرة
-
+        unique_together = ('idea', 'company_owner')  # Each company can submit one application per idea.
     def _str_(self):
-        return f"{self.user.username} wants to join {self.idea.title}"
-
-class Notification(models.Model):
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='partnership_notifications')
-    message = models.TextField()
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def _str_(self):
-        return f"Notification for {self.recipient.username}"
+        return f"{self.company_owner.username} requested partnership on {self.idea.title}"

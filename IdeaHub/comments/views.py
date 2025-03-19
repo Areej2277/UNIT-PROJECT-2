@@ -1,22 +1,45 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Comment
-from .forms import CommentForm
 from ideas.models import Idea
 
-# Create your views here.
-
+# إضافة تعليق على فكرة
 @login_required
 def add_comment(request, idea_id):
     idea = get_object_or_404(Idea, id=idea_id)
+
     if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.user = request.user
-            comment.idea = idea
-            comment.save()
-            return redirect('ideas:list')
-    else:
-        form = CommentForm()
-    return render(request, 'comments/add_comment.html', {'form': form, 'idea': idea})
+        content = request.POST.get("content", "").strip()
+
+        if content:
+            comment = Comment.objects.create(
+                user=request.user,
+                idea=idea,
+                content=content
+            )
+            messages.success(request, "Comment added successfully!", "alert-success")
+        else:
+            messages.error(request, "Comment cannot be empty!", "alert-danger")
+
+        return redirect('ideas:detail', idea_id=idea.id)
+
+    return render(request, 'comments/add_comment.html', {'idea': idea})
+
+
+# حذف تعليق
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+
+    # تأكد أن المستخدم هو صاحب التعليق
+    if request.user != comment.user:
+        messages.error(request, "You are not authorized to delete this comment.", "alert-danger")
+        return redirect('ideas:detail', idea_id=comment.idea.id)
+
+    if request.method == "POST":
+        comment.delete()
+        messages.success(request, "Comment deleted successfully!", "alert-warning")
+        return redirect('ideas:detail', idea_id=comment.idea.id)
+
+    return render(request, 'comments/delete_comment.html', {'comment': comment})

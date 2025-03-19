@@ -5,7 +5,8 @@ app_name = 'partnerships'
 
 urlpatterns = [
     path('<int:idea_id>/request/', views.request_partnership, name='request'),
-    path('<int:partnership_id>/approve/', views.approve_partnership, name='approve'),
-    path('notifications/', views.notifications_list, name='notifications_list'),
-    path('notifications/<int:notification_id>/read/', views.mark_notification_as_read, name='mark_notification_as_read'),
+    path('<int:request_id>/approve/', views.approve_partnership, name='approve'),
+    path('<int:request_id>/reject/', views.reject_partnership, name='reject'),
+    path('received/', views.received_requests, name='received_requests'),
+    path('sent/', views.sent_requests, name='sent_requests'),
 ]

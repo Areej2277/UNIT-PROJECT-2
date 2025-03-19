@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Profile
 
-# تسجيل مستخدم جديد
+# Register a new user
 def register(request: HttpRequest):
     if request.method == "POST":
         try:
@@ -18,14 +18,14 @@ def register(request: HttpRequest):
                 email = request.POST["email"]
                 first_name = request.POST["first_name"]
                 last_name = request.POST["last_name"]
-                user_type = request.POST["user_type"]  # استخراج نوع الحساب
+                user_type = request.POST["user_type"]  # # Extract the account type
 
-                # التحقق من تطابق كلمتي المرور
+                
                 if password != confirm_password:
                     messages.error(request, "Passwords do not match.", "alert-danger")
                     return render(request, "users/register.html")
 
-                # إنشاء المستخدم
+                
                 new_user = User.objects.create_user(
                     username=username, 
                     password=password, 
@@ -35,7 +35,7 @@ def register(request: HttpRequest):
                 )
                 new_user.save()
 
-                # إنشاء بروفايل للمستخدم بناءً على نوع الحساب
+                # Create a user profile based on the account type
                 profile = Profile.objects.create(
                     user=new_user,
                     user_type=user_type,
@@ -55,7 +55,7 @@ def register(request: HttpRequest):
     return render(request, "users/register.html")
 
 
-# تسجيل دخول المستخدم
+# # User login 
 def user_login(request: HttpRequest):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -72,34 +72,32 @@ def user_login(request: HttpRequest):
     return render(request, "users/login.html")
 
 
-# تسجيل خروج المستخدم
+# Log the user out
 def user_logout(request: HttpRequest):
     logout(request)
     messages.success(request, "Logged out successfully", "alert-warning")
     return redirect("home")
 
 
-# عرض الملف الشخصي
+#View profile
 @login_required(login_url='/users/login/')
 def profile(request: HttpRequest):
     return render(request, "users/profile.html", {"user": request.user})
 
 
-# تعديل الملف الشخصي بدون forms.py
+
 @login_required(login_url='/users/login/')
 def edit_profile(request: HttpRequest):
     if request.method == "POST":
         try:
             with transaction.atomic():
                 user = request.user
-
-                # تحديث بيانات المستخدم
                 user.first_name = request.POST["first_name"]
                 user.last_name = request.POST["last_name"]
                 user.email = request.POST["email"]
                 user.save()
 
-                # تحديث بيانات الملف الشخصي
+
                 profile = user.profile
                 profile.about = request.POST.get("about", "")
 

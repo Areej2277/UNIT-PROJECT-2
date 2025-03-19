@@ -27,18 +27,23 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'ideas:list' %}">Explore Ideas</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'ideas:create' %}">Add Idea</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-                </ul>
-
-                <ul class="navbar-nav ms-3">
+                
                     {% if user.is_authenticated %}
+                        {% if user.profile.user_type == "business" %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'partnerships:sent_requests' %}">My Requests</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'partnerships:received_requests' %}">Partnership Requests</a></li>
+                        {% endif %}
+                
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'notifications_list' %}">
                                 Notifications
-                                {% if unread_notifiactions > 0 %}
-                                    <span class="badge bg-danger">{{ unread_notifiactions }}</span>
+                                {% if unread_notifications > 0 %}
+                                    <span class="badge bg-danger">{{ unread_notifications }}</span>
                                 {% endif %}
                             </a>
                         </li>
+                
                         <li class="nav-item"><a class="nav-link" href="{% url 'users:profile' %}">Profile</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'users:logout' %}">Logout</a></li>
                     {% else %}

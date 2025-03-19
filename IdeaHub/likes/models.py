@@ -9,7 +9,7 @@ class Like(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'idea')  # كل مستخدم يمكنه الإعجاب بالفكرة مرة واحدة
+        unique_together = ('user', 'idea')  
 
     def _str_(self):
         return f"{self.user.username} likes {self.idea.title}"

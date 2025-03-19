@@ -19,7 +19,8 @@ def contact(request):
 
 @login_required
 def notifications_list(request):
-    notifications = request.user.core_notifications.all().order_by('-created_at')
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
+    
     return render(request, 'core/notifications.html', {'notifications': notifications})
 
 
@@ -28,4 +29,5 @@ def mark_notification_as_read(request, notification_id):
     notification = get_object_or_404(Notification, id=notification_id, recipient=request.user)
     notification.is_read = True
     notification.save()
+    
     return redirect('core:notifications_list')
