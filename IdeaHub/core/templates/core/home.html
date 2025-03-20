@@ -2,11 +2,41 @@
 {% load static %}
 
 {% block content %}
-<section class="hero">
-    <div class="hero-text">
+<section class="hero text-center text-light py-5">
+    <div class="container">
         <h1 class="fade-in">Welcome to IdeaHub</h1>
-        <p class="fade-in delay">Share and explore innovative ideas!</p>
-        <a href="{% url 'ideas:list' %}" class="explore-btn fade-in delay-2">Explore Ideas</a>
+        <p class="fade-in delay">A place where ideas meet investors!</p>
+
+        {% if user.is_authenticated %}
+            {% if user_type == "idea_owner" %}
+                <h3 class="fade-in delay-2">🚀 Ready to Share Your Next Big Idea?</h3>
+                <a href="{% url 'ideas:create' %}" class="btn btn-primary fade-in delay-3">Add Your Idea</a>
+            {% elif user_type == "business" %}
+                <h3 class="fade-in delay-2">💼 Discover Ideas to Invest In!</h3>
+                <a href="{% url 'ideas:list' %}" class="btn btn-success fade-in delay-3">Explore Ideas</a>
+            {% endif %}
+        {% else %}
+            <h3 class="fade-in delay-2">Join Now & Connect with Innovators</h3>
+            <a href="{% url 'users:register' %}" class="btn btn-light fade-in delay-3">Sign Up</a>
+        {% endif %}
     </div>
 </section>
+
+<!-- Top Liked Ideas -->
+<div class="container mt-5">
+    <h3 class="text-center">🔥 Most Liked Ideas</h3>
+    <div class="row">
+        {% for idea in top_liked_ideas %}
+            <div class="col-md-3">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ idea.title }}</h5>
+                        <p class="text-muted">By {{ idea.user.username }}</p>
+                        <a href="{% url 'ideas:detail' idea.id %}" class="btn btn-outline-primary btn-sm">View Idea</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

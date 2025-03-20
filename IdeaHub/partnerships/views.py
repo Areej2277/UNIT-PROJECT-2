@@ -5,7 +5,7 @@ from .models import PartnershipRequest
 from core.models import Notification  
 from ideas.models import Idea
 
-# Submit an application to adopt an idea (for companies only)
+# Submit an idea adoption request (for companies only))
 @login_required
 def request_partnership(request, idea_id):
     idea = get_object_or_404(Idea, id=idea_id)
@@ -14,25 +14,37 @@ def request_partnership(request, idea_id):
         messages.error(request, "Only companies can request partnerships.")
         return redirect('ideas:detail', idea_id=idea_id)
 
-    partnership_request, created = PartnershipRequest.objects.get_or_create(
-        idea=idea,
-        company_owner=request.user,
-        idea_owner=idea.user,
-        status="Pending"
-    )
+    if request.method == "POST":
+        partnership_percentage = request.POST.get("partnership_percentage")
+        company_location = request.POST.get("company_location")
 
-    if created:
-        Notification.objects.create(
-            recipient=idea.user,
-            message=f"Company {request.user.username} wants to adopt your idea '{idea.title}'."
+        if not partnership_percentage or not company_location:
+            messages.error(request, "Please provide all required details.")
+            return redirect('ideas:detail', idea_id=idea_id)
+
+        partnership_request, created = PartnershipRequest.objects.get_or_create(
+            idea=idea,
+            company_owner=request.user,
+            idea_owner=idea.user,
+            status="Pending",
+            partnership_percentage=partnership_percentage,
+            company_location=company_location
         )
-        messages.success(request, "Partnership request sent successfully!")
-    else:
-        messages.warning(request, "You have already requested a partnership for this idea.")
+
+        if created:
+            Notification.objects.create(
+                recipient=idea.user,
+                message=f"Company {request.user.company_profile.company_name} wants to adopt your idea '{idea.title}'. "
+                        f"They propose a {partnership_percentage}% partnership and are located at {company_location}."
+            )
+            messages.success(request, "Partnership request sent successfully!")
+        else:
+            messages.warning(request, "You have already requested a partnership for this idea.")
 
     return redirect('ideas:detail', idea_id=idea_id)
 
-# Accept the partnership request
+
+# Acceptance of the partnership request
 @login_required
 def approve_partnership(request, request_id):
     partnership_request = get_object_or_404(PartnershipRequest, id=request_id)
@@ -85,7 +97,7 @@ def received_requests(request):
     return render(request, "partnerships/received_requests.html", {"requests": requests})
 
 
-# Display requests sent to business owners
+# View requests sent to business owners
 @login_required
 def sent_requests(request):
     if not hasattr(request.user, 'company_profile'):
@@ -100,7 +112,7 @@ def sent_requests(request):
     return render(request, "partnerships/sent_requests.html", {"requests": requests})
 
 
-# View notifications
+# Show notifications 
 @login_required
 def notifications_list(request):
     notifications = Notification.objects.filter(recipient=request.user).order_by("-created_at")
@@ -110,6 +122,8 @@ def notifications_list(request):
 
     return render(request, 'core/notifications.html', {"notifications": notifications})
 
+
+# Teaching notification as read
 @login_required
 def mark_notification_as_read(request, notification_id):
     notification = get_object_or_404(Notification, id=notification_id, recipient=request.user)

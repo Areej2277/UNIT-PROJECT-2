@@ -13,6 +13,8 @@
                     <div>
                         <h5>Idea: <strong>{{ request.idea.title }}</strong></h5>
                         <p class="text-muted">Status: <strong>{{ request.status }}</strong></p>
+                        <p><strong>Percentage Share:</strong> {{ request.percentage_share }}%</p>
+                        <p><strong>Company Location:</strong> {{ request.company_location }}</p>
                     </div>
                     <div>
                         {% if request.status == "Pending" %}

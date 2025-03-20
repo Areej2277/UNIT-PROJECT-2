@@ -13,6 +13,8 @@
                     <div>
                         <h5>{{ request.company_owner.company_profile.company_name }}</h5>
                         <p class="text-muted">Requested to partner on <strong>{{ request.idea.title }}</strong></p>
+                        <p><strong>Percentage Share:</strong> {{ request.percentage_share }}%</p>
+                        <p><strong>Company Location:</strong> {{ request.company_location }}</p>
                     </div>
                     <div class="d-flex gap-2">
                         <a href="{% url 'partnerships:approve' request.id %}" class="btn btn-success btn-sm">
