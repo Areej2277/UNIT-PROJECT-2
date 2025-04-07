@@ -1,16 +1,31 @@
 {% extends 'core/base.html' %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-sm p-4">
-        <h2 class="mb-3">Edit Idea: {{ idea.title }}</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                {{ form.as_p }}
+<!-- Edit Idea Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg border-0" style="background-color: rgba(255, 255, 255, 0.95);">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Edit Idea: {{ idea.title }}</h2>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-success px-4">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <a href="{% url 'ideas:detail' idea.id %}" class="btn btn-secondary px-4 ms-2">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Changes</button>
-            <a href="{% url 'ideas:detail' idea.id %}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
-        </form>
+        </div>
     </div>
-</div>
+</section>
 {% endblock %}

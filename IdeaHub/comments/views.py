@@ -4,7 +4,7 @@ from django.contrib import messages
 from .models import Comment
 from ideas.models import Idea
 
-# إضافة تعليق على فكرة
+# Add a comment on an idea
 @login_required
 def add_comment(request, idea_id):
     idea = get_object_or_404(Idea, id=idea_id)
@@ -27,12 +27,12 @@ def add_comment(request, idea_id):
     return render(request, 'comments/add_comment.html', {'idea': idea})
 
 
-# حذف تعليق
+# Delete comment
 @login_required
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
 
-    # تأكد أن المستخدم هو صاحب التعليق
+    # Make sure the user is the commenter
     if request.user != comment.user:
         messages.error(request, "You are not authorized to delete this comment.", "alert-danger")
         return redirect('ideas:detail', idea_id=comment.idea.id)

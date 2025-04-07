@@ -7,15 +7,19 @@
     <h2 class="mb-4 text-center">Your Partnership Requests</h2>
 
     {% if requests %}
+        <!-- Loop through all sent partnership requests -->
         <div class="list-group">
             {% for request in requests %}
                 <div class="list-group-item d-flex justify-content-between align-items-center shadow-sm p-3">
                     <div>
+                        <!-- Display idea and request information -->
                         <h5>Idea: <strong>{{ request.idea.title }}</strong></h5>
                         <p class="text-muted">Status: <strong>{{ request.status }}</strong></p>
                         <p><strong>Percentage Share:</strong> {{ request.percentage_share }}%</p>
                         <p><strong>Company Location:</strong> {{ request.company_location }}</p>
                     </div>
+
+                    <!-- If the request is still pending, show Cancel button -->
                     <div>
                         {% if request.status == "Pending" %}
                             <a href="{% url 'partnerships:reject' request.id %}" class="btn btn-warning btn-sm">
@@ -27,6 +31,7 @@
             {% endfor %}
         </div>
     {% else %}
+        <!-- Message if no requests were sent -->
         <p class="text-center text-muted">You haven't sent any partnership requests yet.</p>
     {% endif %}
 </div>

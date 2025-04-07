@@ -1,20 +1,41 @@
 {% extends 'core/base.html' %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-sm p-4">
-        <h2 class="mb-3">Add a New Idea</h2>
+<!-- Add Idea Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
 
-        {% if not user.is_authenticated %}
-            <p>You need to <a href="{% url 'login' %}">Sign In</a> to add an idea.</p>
-        {% else %}
-            <form method="POST">
-                {% csrf_token %}
-                <div class="mb-3">
-                    {{ form.as_p }}
+                <!-- Show success message -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success text-center fw-bold">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="card shadow-lg border-0" style="background-color: rgba(255, 255, 255, 0.95);">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Share Your Idea</h2>
+
+                        {% if not user.is_authenticated %}
+                            <p class="text-center">You need to <a href="{% url 'login' %}">Sign In</a> to add an idea.</p>
+                        {% else %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-success px-4">
+                                        <i class="fas fa-plus-circle"></i> Submit Idea
+                                    </button>
+                                </div>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-success"><i class="fas fa-plus-circle"></i> Submit Idea</button>
-            </form>
-        {% endif %}
+            </div>
+        </div>
     </div>
-</div>
+</section>
 {% endblock %}

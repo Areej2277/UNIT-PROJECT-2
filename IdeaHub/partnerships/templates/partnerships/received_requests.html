@@ -7,15 +7,21 @@
     <h2 class="mb-4 text-center">Partnership Requests</h2>
 
     {% if requests %}
+        <!-- Loop through all partnership requests -->
         <div class="list-group">
             {% for request in requests %}
                 <div class="list-group-item d-flex justify-content-between align-items-center shadow-sm p-3">
                     <div>
+                        <!-- Company information and request details -->
                         <h5>{{ request.company_owner.company_profile.company_name }}</h5>
-                        <p class="text-muted">Requested to partner on <strong>{{ request.idea.title }}</strong></p>
+                        <p class="text-muted">
+                            Requested to partner on <strong>{{ request.idea.title }}</strong>
+                        </p>
                         <p><strong>Percentage Share:</strong> {{ request.percentage_share }}%</p>
                         <p><strong>Company Location:</strong> {{ request.company_location }}</p>
                     </div>
+                    
+                    <!-- Action buttons to approve or reject -->
                     <div class="d-flex gap-2">
                         <a href="{% url 'partnerships:approve' request.id %}" class="btn btn-success btn-sm">
                             <i class="fas fa-check"></i> Approve
@@ -28,6 +34,7 @@
             {% endfor %}
         </div>
     {% else %}
+        <!-- Message when no requests are available -->
         <p class="text-center text-muted">No partnership requests at the moment.</p>
     {% endif %}
 </div>

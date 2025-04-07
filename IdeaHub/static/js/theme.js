@@ -3,27 +3,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const themeIcon = document.getElementById("theme-icon");
     const body = document.body;
 
-    // التحقق من الوضع المخزن في LocalStorage
+    // Check the status stored in LocalStorage
     if (localStorage.getItem("theme") === "dark") {
         body.classList.add("dark-mode");
         body.classList.remove("light-mode");
-        themeIcon.textContent = "light_mode"; // أيقونة الشمس
+        themeIcon.textContent = "light_mode"; // Sun icon
     } else {
         body.classList.add("light-mode");
         body.classList.remove("dark-mode");
-        themeIcon.textContent = "dark_mode"; // أيقونة القمر
+        themeIcon.textContent = "dark_mode"; // Moon icon
     }
 
     themeToggle.addEventListener("click", function () {
         if (body.classList.contains("dark-mode")) {
             body.classList.remove("dark-mode");
             body.classList.add("light-mode");
-            themeIcon.textContent = "dark_mode"; // تحويل للأيقونة القمر
+            themeIcon.textContent = "dark_mode"; // Convert to moon icon
             localStorage.setItem("theme", "light");
         } else {
             body.classList.remove("light-mode");
             body.classList.add("dark-mode");
-            themeIcon.textContent = "light_mode"; // تحويل للأيقونة الشمس
+            themeIcon.textContent = "light_mode";// Convert to sun icon
             localStorage.setItem("theme", "dark");
         }
     });

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Idea
 from .forms import IdeaForm
 from likes.models import Like
@@ -27,6 +28,7 @@ def idea_create(request):
             idea = form.save(commit=False)
             idea.user = request.user  
             idea.save()
+            messages.success(request, "Your idea has been submitted successfully!")
             return redirect('ideas:list')
     else:
         form = IdeaForm()

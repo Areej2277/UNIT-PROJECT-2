@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Contact Messages</h2>
+
+    {% if messages %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Message</th>
+                        <th>Sent At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for msg in messages %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ msg.name }}</td>
+                            <td>{{ msg.email }}</td>
+                            <td>{{ msg.subject }}</td>
+                            <td>{{ msg.message }}</td>
+                            <td>{{ msg.sent_at|date:"F d, Y - H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted text-center">No contact messages yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
