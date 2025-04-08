@@ -1,9 +1,32 @@
 {% extends 'core/base.html' %}
+
 {% block content %}
-    <h2>Are you sure you want to delete "{{ idea.title }}"?</h2>
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit">Yes, Delete</button>
-        <a href="{% url 'ideas:list' %}">Cancel</a>
-    </form>
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body text-center p-5">
+                        <h2 class="text-danger mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Are you sure?
+                        </h2>
+                        <p class="lead">You are about to delete the idea:</p>
+                        <h4 class="mb-4 text-dark">"{{ idea.title }}"</h4>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger me-3">
+                                <i class="fas fa-trash-alt me-1"></i> Yes, Delete
+                            </button>
+                            <a href="{% url 'ideas:list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times-circle me-1"></i> Cancel
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
