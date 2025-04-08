@@ -61,29 +61,3 @@ IdeaHub is an innovative platform that connects entrepreneurs and creative think
 
 ---
 
-## Resources
-
-*Free high quality images:*  
-- https://www.pexels.com/  
-- https://unsplash.com  
-
-*Free sounds website:*  
-- https://mixkit.co/  
-
-*Free stock videos:*  
-- https://pixabay.com/videos/  
-
-*Free Fonts:*  
-- https://fonts.google.com  
-
-*Free Icons:*  
-- https://fonts.google.com/icons  
-- https://icons.getbootstrap.com/  
-
-*CSS Libraries:*  
-- https://getbootstrap.com/  
-- https://get.foundation/index.html  
-
-*CSS Animation libraries:*  
-- https://animate.style  
-- https://www.minimamente.com/project/magic/
